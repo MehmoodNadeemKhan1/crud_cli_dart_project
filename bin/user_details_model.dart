@@ -37,7 +37,7 @@ class UserDetails with _$UserDetails {
   const factory UserDetails({
     String? id,
     String? name,
-    String createdAt,
+    String? createdAt,
     UserData? data,
   }) = _UserDetails;
 

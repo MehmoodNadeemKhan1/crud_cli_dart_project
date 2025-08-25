@@ -1,65 +1,228 @@
 import 'server_based_implementation.dart';
+import 'file_based_implementation.dart';
 import 'user_details_model.dart';
-// import 'package:args/args.dart';
-//
-//
-// ArgParser buildParser() {
-//   return ArgParser()
-//     ..addOption(
-//       'create',
-//       abbr: 'c',
-//       help: 'Option is not specified.',
-//     )
-//   ..addOption(
-//   'list',
-//   abbr: 'l',
-//   help: 'Option is not specified.',
-//   )
-//   ..addOption(
-//   'find',
-//   abbr: 'f',
-//   help: 'Option is not specified.',
-//   )
-//   ..addOption(
-//   'delete',
-//   abbr: 'del',
-//   help: 'Option is not specified.',
-//   )
-//   ..addOption(
-//   'delete-all',
-//   abbr: 'delA',
-//   help: 'Option is not specified.',
-//   )
-//   ..addOption(
-//   'update',
-//   abbr: 'up',
-//   help: 'Option is not specified.',
-//   );
-//
-// }
-//
+import 'package:args/args.dart';
 
+void main(List<String> arguments) async
+{
 
+    final parser = ArgParser()
+    ..addFlag(
+        'server',
+        abbr: 's',
+        negatable: false,
+        help: 'Enable server option.'
+    )
+    ..addFlag(
+        'file',
+        abbr: 'f',
+        negatable: false,
+        help: 'Enable file option.'
+    )
+    ..addOption(
+        'create',
+        abbr: 'c',
+        help: 'Option is not specified.'
+    )
+    ..addFlag(
+        'list',
+        abbr: 'l',
+        negatable: false,
+        help: 'Option is not specified.'
+    )
+    ..addOption(
+        'getone',
+        abbr: 'g',
+        help: 'Option is not specified.'
+    )
+    ..addOption(
+        'delete',
+        abbr: 'd',
+        help: 'Option is not specified.'
+    )
+    ..addFlag(
+        'delete-all',
+        abbr: 'D',
+        negatable: false,
+        help: 'Option is not specified.'
+    )
+    ..addOption(
+        'update',
+        abbr: 'u',
+        help: 'Option is not specified.'
+    );
+    final results = parser.parse(arguments);
 
-void main(List<String> arguments) async{
+    if (results['server'] == true)
+    {
+        if (results['create'] != null)
+        {
 
-     // final api = UserDetailsApiRepository(ApiClient());
-     // await api.create(UserDetails(name: 'Mehmood', data: UserData(userId: "1", firstName: "Mehmood Khan", lastName: "Khanzada", age: 23, birthYear: "2001", nationality: "Pakistani",)));
+            final createData = results['create'];
+            if (createData != null)
+            {
+                final split = createData.split(",");
+                final id = split.length > 0 ? split[0] : null;
+                final firstName = split.length > 1 ? split[1] : null;
+                final lastName = split.length > 2 ? split[2] : null;
+                final age = split.length > 3 ? split[3] : null;
+                final birthYear = split.length > 4 ? split[4] : null;
+                final nationality = split.length > 5 ? split[5] : null;
+                if (id == null && firstName == null && lastName == null && age == null && birthYear == null && nationality == null)
+                {
+                    print("All fields are required");
+                }
 
-     // final api = UserDetailsApiRepository(ApiClient());
-     // await api.findById("ff8081819782e69e0198d6c44ad812e4");
+                print('UserId: $id,FirstName: $firstName LastName: $lastName Age: $age BirthYear: $birthYear Nationality: $nationality');
+                final api = UserDetailsApiRepository(ApiClient());
+                await api.create(UserDetails(name: 'UserDetailsAPI', data: UserData(userId: id, firstName: firstName, lastName: lastName, age: int.parse(age), birthYear: birthYear, nationality: nationality)));
+            }
+            else
+            {
+                print("No created data provided please enter all fields");
+            }
 
-    //
-    // final api2 = UserDetailsApiRepository(ApiClient());
-    // await api2.list();
-    // final users2 = await api2.list();
-    // print(users2);
+        }
+        else if (results['list'] == true)
+        {
+            final api2 = UserDetailsApiRepository(ApiClient());
+            final users2 = await api2.list();
+            print(users2);
+        }
+        else if (results['getone'] != null)
+        {
+            final api = UserDetailsApiRepository(ApiClient());
+            await api.findById(results['getone']);
+        }
+        else if (results['delete'] != null)
+        {
+            final api = UserDetailsApiRepository(ApiClient());
+            await api.delete(results['delete']);
 
-    //
-    // final api = UserDetailsApiRepository(ApiClient());
-    // await api.delete("ff8081819782e69e0198d68284af127a");
-    //
-    // final api = UserDetailsApiRepository(ApiClient());
-    // await api.update("ff8081819782e69e0198d6c44ad812e4",UserDetails(name: 'Ahmed', data: UserData(firstName: "Ahmed Khan", lastName: "Khanzada", age: 23, birthYear: "2001", nationality: "Indian")));
+        }
+        else if (results['delete-all'] == true)
+        {
+            final api = UserDetailsApiRepository(ApiClient());
+            await api.deleteAll();
+        }
+        else if (results['update'] != null)
+        {
+            final createData = results['update'];
+            if (createData != null) 
+            {
+                final split = createData.split(",");
+                final id = split.length > 0 ? split[0] : null;
+                final firstName = split.length > 1 ? split[1] : null;
+                final lastName = split.length > 2 ? split[2] : null;
+                final age = split.length > 3 ? split[3] : null;
+                final birthYear = split.length > 4 ? split[4] : null;
+                final nationality = split.length > 5 ? split[5] : null;
+
+                if (id == null && firstName == null && lastName == null &&
+                    age == null && birthYear == null && nationality == null) 
+                {
+                    print("All fields are required");
+                }
+
+                print('UserId: $id,FirstName: $firstName LastName: $lastName Age: $age BirthYear: $birthYear Nationality: $nationality');
+                final api = UserDetailsApiRepository(ApiClient());
+                await api.update(id, UserDetails(name: 'UserDetailsAPI', data: UserData(firstName:firstName, lastName:lastName, age:int.parse(age), birthYear:birthYear, nationality:nationality)));
+            }
+        }
+
+        else
+        {
+            print("You entered the wrong flag for server");
+        }
+    }
+    else if (results['file'] == true)
+    {
+        if (results['create'] != null)
+        {
+            final createData = results['create'];
+            if (createData != null)
+            {
+                final split = createData.split(",");
+                final id = split.length > 0 ? split[0] : null;
+                final firstName = split.length > 1 ? split[1] : null;
+                final lastName = split.length > 2 ? split[2] : null;
+                final age = split.length > 3 ? split[3] : null;
+                final birthYear = split.length > 4 ? split[4] : null;
+                final nationality = split.length > 5 ? split[5] : null;
+
+                if (id == null && firstName == null && lastName == null && age == null && birthYear == null && nationality == null)
+                {
+                    print("All fields are required");
+                }
+
+                print('UserId: $id,FirstName: $firstName LastName: $lastName Age: $age BirthYear: $birthYear Nationality: $nationality');
+
+                final file = UserDetailsFileRepository();
+                await file.create(UserData(userId: id, firstName: firstName, lastName: lastName, age: int.parse(age), birthYear: birthYear, nationality: nationality));
+
+            }
+            else
+            {
+                print("No created data provided please enter all fields");
+            }
+
+        }
+        else if (results['list'] == true)
+        {
+            final file = UserDetailsFileRepository();
+            print(await file.list());
+        }
+        else if (results['getone'] != null)
+        {
+            final file = UserDetailsFileRepository();
+            print(await file.findById(results['getone']));
+
+        }
+        else if (results['delete'] != null)
+        {
+            final file = UserDetailsFileRepository();
+            await file.delete(results['delete']);
+        }
+        else if (results['delete-all'] == true)
+        {
+            final file = UserDetailsFileRepository();
+            await file.deleteAll();
+            return null;
+        }
+        else if (results['update'] != null)
+        {
+            final createData = results['update'];
+            if (createData != null)
+            {
+                final split = createData.split(",");
+                final id = split.length > 0 ? split[0] : null;
+                final firstName = split.length > 1 ? split[1] : null;
+                final lastName = split.length > 2 ? split[2] : null;
+                final age = split.length > 3 ? split[3] : null;
+                final birthYear = split.length > 4 ? split[4] : null;
+                final nationality = split.length > 5 ? split[5] : null;
+
+                if (id == null && firstName == null && lastName == null &&
+                    age == null && birthYear == null && nationality == null)
+                {
+                    print("All fields are required");
+                }
+
+                print('UserId: $id,FirstName: $firstName LastName: $lastName Age: $age BirthYear: $birthYear Nationality: $nationality');
+
+                final file = UserDetailsFileRepository();
+                await file.update(id, UserData(firstName: firstName, lastName: lastName, age: int.parse(age), birthYear: birthYear, nationality: nationality));
+
+            }
+        }
+        else
+        {
+            print("You entered the wrong flag for file");
+        }
+    }
+    else
+    {
+        print("Neither server nor file flag provided");
+    }
 
 }
