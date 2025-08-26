@@ -40,7 +40,7 @@ class UserDetailsDatabaseRepository implements IRepository<UserDetails> {
     return users.map((u) {
       return UserDetails(
         id: u.id.toString(),
-        name: "${u.firstName ?? ''} ${u.lastName ?? ''}".trim(),
+        name: "${u.firstName} ${u.lastName ?? ''}".trim(),
         createdAt: null,
         data: UserData(
           userId: u.id.toString(),

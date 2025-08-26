@@ -260,25 +260,29 @@ void main(List<String> arguments) async
         }
         else if (results['list'] == true)
         {
-            // final api2 = UserDetailsApiRepository(ApiClient());
-            // final users2 = await api2.list();
-            // print(users2);
+            final db = AppDatabase();
+            final database = UserDetailsDatabaseRepository(db);
+            final list = await database.list();
+            print(list);
         }
         else if (results['getone'] != null)
         {
-            // final api = UserDetailsApiRepository(ApiClient());
-            // await api.findById(results['getone']);
+            final db = AppDatabase();
+            final database = UserDetailsDatabaseRepository(db);
+            await database.findById(results['getone']);
         }
         else if (results['delete'] != null)
         {
-            // final api = UserDetailsApiRepository(ApiClient());
-            // await api.delete(results['delete']);
+             final db=AppDatabase();
+             final database = UserDetailsDatabaseRepository(db);
+             await database.delete(results['delete']);
 
         }
         else if (results['delete-all'] == true)
         {
-            // final api = UserDetailsApiRepository(ApiClient());
-            // await api.deleteAll();
+            final db = AppDatabase();
+             final database = UserDetailsDatabaseRepository(db);
+             await database.deleteAll();
         }
         else if (results['update'] != null)
         {
@@ -300,8 +304,8 @@ void main(List<String> arguments) async
                 }
 
                 print('UserId: $id,FirstName: $firstName LastName: $lastName Age: $age BirthYear: $birthYear Nationality: $nationality');
-                // final api = UserDetailsApiRepository(ApiClient());
-                // await api.update(id, UserDetails(name: 'UserDetailsAPI', data: UserData(firstName:firstName, lastName:lastName, age:int.parse(age), birthYear:birthYear, nationality:nationality)));
+               //  final api = UserDetailsApiRepository(ApiClient());
+             //    await api.update(id, UserDetails(name: 'UserDetailsAPI', data: UserData(firstName:firstName, lastName:lastName, age:int.parse(age), birthYear:birthYear, nationality:nationality)));
             }
         }
 

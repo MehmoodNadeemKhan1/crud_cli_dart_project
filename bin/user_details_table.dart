@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 
+
 @DataClassName('UserDetailDb')
 class UserDetailsTable extends Table {
   TextColumn get id => text()();

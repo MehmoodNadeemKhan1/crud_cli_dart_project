@@ -28,6 +28,7 @@ class AppDatabase extends _$AppDatabase {
       (delete(userDetailsTable)..where((t) => t.id.equals(id))).go();
 }
 
+
 LazyDatabase _openConnection() {
   return LazyDatabase(() async {
     final file = File('my_sqlite_db.db');

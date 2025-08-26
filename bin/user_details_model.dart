@@ -1,32 +1,3 @@
-// import 'package:freezed_annotation/freezed_annotation.dart';
-//
-// part 'user_details_model.freezed.dart';
-// part 'user_details_model.g.dart';
-//
-// @freezed
-// class UserDetails with _$UserDetails {
-//   const factory UserDetails({
-//     required int? id,
-//     required String? firstName,
-//     required String? lastName,
-//     required int? age,
-//     required String? birthYear,
-//     required String? nationality,
-//   }) = _UserDetails;
-//
-//   factory UserDetails.fromJson(Map<String, dynamic> json) =>
-//       _$UserDetailsFromJson(json);
-// }
-//
-// extension UserDetailsApi on UserDetails {
-//   Map<String, dynamic> toApiJson() {
-//     return {
-//       "name": "${firstName ?? ''} ${lastName ?? ''}".trim(),
-//       "data": toJson()
-//     };
-//   }
-// }
-
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'user_details_model.freezed.dart';
