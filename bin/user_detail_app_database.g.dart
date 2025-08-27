@@ -36,18 +36,18 @@ class $UserDetailsTableTable extends UserDetailsTable
   late final GeneratedColumn<String> lastName = GeneratedColumn<String>(
     'last_name',
     aliasedName,
-    true,
+    false,
     type: DriftSqlType.string,
-    requiredDuringInsert: false,
+    requiredDuringInsert: true,
   );
   static const VerificationMeta _ageMeta = const VerificationMeta('age');
   @override
   late final GeneratedColumn<int> age = GeneratedColumn<int>(
     'age',
     aliasedName,
-    true,
+    false,
     type: DriftSqlType.int,
-    requiredDuringInsert: false,
+    requiredDuringInsert: true,
   );
   static const VerificationMeta _birthYearMeta = const VerificationMeta(
     'birthYear',
@@ -56,9 +56,9 @@ class $UserDetailsTableTable extends UserDetailsTable
   late final GeneratedColumn<String> birthYear = GeneratedColumn<String>(
     'birth_year',
     aliasedName,
-    true,
+    false,
     type: DriftSqlType.string,
-    requiredDuringInsert: false,
+    requiredDuringInsert: true,
   );
   static const VerificationMeta _nationalityMeta = const VerificationMeta(
     'nationality',
@@ -110,18 +110,24 @@ class $UserDetailsTableTable extends UserDetailsTable
         _lastNameMeta,
         lastName.isAcceptableOrUnknown(data['last_name']!, _lastNameMeta),
       );
+    } else if (isInserting) {
+      context.missing(_lastNameMeta);
     }
     if (data.containsKey('age')) {
       context.handle(
         _ageMeta,
         age.isAcceptableOrUnknown(data['age']!, _ageMeta),
       );
+    } else if (isInserting) {
+      context.missing(_ageMeta);
     }
     if (data.containsKey('birth_year')) {
       context.handle(
         _birthYearMeta,
         birthYear.isAcceptableOrUnknown(data['birth_year']!, _birthYearMeta),
       );
+    } else if (isInserting) {
+      context.missing(_birthYearMeta);
     }
     if (data.containsKey('nationality')) {
       context.handle(
@@ -152,15 +158,15 @@ class $UserDetailsTableTable extends UserDetailsTable
       lastName: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}last_name'],
-      ),
+      )!,
       age: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}age'],
-      ),
+      )!,
       birthYear: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}birth_year'],
-      ),
+      )!,
       nationality: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}nationality'],
@@ -177,16 +183,16 @@ class $UserDetailsTableTable extends UserDetailsTable
 class UserDetailDb extends DataClass implements Insertable<UserDetailDb> {
   final String id;
   final String firstName;
-  final String? lastName;
-  final int? age;
-  final String? birthYear;
+  final String lastName;
+  final int age;
+  final String birthYear;
   final String? nationality;
   const UserDetailDb({
     required this.id,
     required this.firstName,
-    this.lastName,
-    this.age,
-    this.birthYear,
+    required this.lastName,
+    required this.age,
+    required this.birthYear,
     this.nationality,
   });
   @override
@@ -194,15 +200,9 @@ class UserDetailDb extends DataClass implements Insertable<UserDetailDb> {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
     map['first_name'] = Variable<String>(firstName);
-    if (!nullToAbsent || lastName != null) {
-      map['last_name'] = Variable<String>(lastName);
-    }
-    if (!nullToAbsent || age != null) {
-      map['age'] = Variable<int>(age);
-    }
-    if (!nullToAbsent || birthYear != null) {
-      map['birth_year'] = Variable<String>(birthYear);
-    }
+    map['last_name'] = Variable<String>(lastName);
+    map['age'] = Variable<int>(age);
+    map['birth_year'] = Variable<String>(birthYear);
     if (!nullToAbsent || nationality != null) {
       map['nationality'] = Variable<String>(nationality);
     }
@@ -213,13 +213,9 @@ class UserDetailDb extends DataClass implements Insertable<UserDetailDb> {
     return UserDetailsTableCompanion(
       id: Value(id),
       firstName: Value(firstName),
-      lastName: lastName == null && nullToAbsent
-          ? const Value.absent()
-          : Value(lastName),
-      age: age == null && nullToAbsent ? const Value.absent() : Value(age),
-      birthYear: birthYear == null && nullToAbsent
-          ? const Value.absent()
-          : Value(birthYear),
+      lastName: Value(lastName),
+      age: Value(age),
+      birthYear: Value(birthYear),
       nationality: nationality == null && nullToAbsent
           ? const Value.absent()
           : Value(nationality),
@@ -234,9 +230,9 @@ class UserDetailDb extends DataClass implements Insertable<UserDetailDb> {
     return UserDetailDb(
       id: serializer.fromJson<String>(json['id']),
       firstName: serializer.fromJson<String>(json['firstName']),
-      lastName: serializer.fromJson<String?>(json['lastName']),
-      age: serializer.fromJson<int?>(json['age']),
-      birthYear: serializer.fromJson<String?>(json['birthYear']),
+      lastName: serializer.fromJson<String>(json['lastName']),
+      age: serializer.fromJson<int>(json['age']),
+      birthYear: serializer.fromJson<String>(json['birthYear']),
       nationality: serializer.fromJson<String?>(json['nationality']),
     );
   }
@@ -246,9 +242,9 @@ class UserDetailDb extends DataClass implements Insertable<UserDetailDb> {
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
       'firstName': serializer.toJson<String>(firstName),
-      'lastName': serializer.toJson<String?>(lastName),
-      'age': serializer.toJson<int?>(age),
-      'birthYear': serializer.toJson<String?>(birthYear),
+      'lastName': serializer.toJson<String>(lastName),
+      'age': serializer.toJson<int>(age),
+      'birthYear': serializer.toJson<String>(birthYear),
       'nationality': serializer.toJson<String?>(nationality),
     };
   }
@@ -256,16 +252,16 @@ class UserDetailDb extends DataClass implements Insertable<UserDetailDb> {
   UserDetailDb copyWith({
     String? id,
     String? firstName,
-    Value<String?> lastName = const Value.absent(),
-    Value<int?> age = const Value.absent(),
-    Value<String?> birthYear = const Value.absent(),
+    String? lastName,
+    int? age,
+    String? birthYear,
     Value<String?> nationality = const Value.absent(),
   }) => UserDetailDb(
     id: id ?? this.id,
     firstName: firstName ?? this.firstName,
-    lastName: lastName.present ? lastName.value : this.lastName,
-    age: age.present ? age.value : this.age,
-    birthYear: birthYear.present ? birthYear.value : this.birthYear,
+    lastName: lastName ?? this.lastName,
+    age: age ?? this.age,
+    birthYear: birthYear ?? this.birthYear,
     nationality: nationality.present ? nationality.value : this.nationality,
   );
   UserDetailDb copyWithCompanion(UserDetailsTableCompanion data) {
@@ -312,9 +308,9 @@ class UserDetailDb extends DataClass implements Insertable<UserDetailDb> {
 class UserDetailsTableCompanion extends UpdateCompanion<UserDetailDb> {
   final Value<String> id;
   final Value<String> firstName;
-  final Value<String?> lastName;
-  final Value<int?> age;
-  final Value<String?> birthYear;
+  final Value<String> lastName;
+  final Value<int> age;
+  final Value<String> birthYear;
   final Value<String?> nationality;
   final Value<int> rowid;
   const UserDetailsTableCompanion({
@@ -329,13 +325,16 @@ class UserDetailsTableCompanion extends UpdateCompanion<UserDetailDb> {
   UserDetailsTableCompanion.insert({
     required String id,
     required String firstName,
-    this.lastName = const Value.absent(),
-    this.age = const Value.absent(),
-    this.birthYear = const Value.absent(),
+    required String lastName,
+    required int age,
+    required String birthYear,
     this.nationality = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
-       firstName = Value(firstName);
+       firstName = Value(firstName),
+       lastName = Value(lastName),
+       age = Value(age),
+       birthYear = Value(birthYear);
   static Insertable<UserDetailDb> custom({
     Expression<String>? id,
     Expression<String>? firstName,
@@ -359,9 +358,9 @@ class UserDetailsTableCompanion extends UpdateCompanion<UserDetailDb> {
   UserDetailsTableCompanion copyWith({
     Value<String>? id,
     Value<String>? firstName,
-    Value<String?>? lastName,
-    Value<int?>? age,
-    Value<String?>? birthYear,
+    Value<String>? lastName,
+    Value<int>? age,
+    Value<String>? birthYear,
     Value<String?>? nationality,
     Value<int>? rowid,
   }) {
@@ -435,9 +434,9 @@ typedef $$UserDetailsTableTableCreateCompanionBuilder =
     UserDetailsTableCompanion Function({
       required String id,
       required String firstName,
-      Value<String?> lastName,
-      Value<int?> age,
-      Value<String?> birthYear,
+      required String lastName,
+      required int age,
+      required String birthYear,
       Value<String?> nationality,
       Value<int> rowid,
     });
@@ -445,9 +444,9 @@ typedef $$UserDetailsTableTableUpdateCompanionBuilder =
     UserDetailsTableCompanion Function({
       Value<String> id,
       Value<String> firstName,
-      Value<String?> lastName,
-      Value<int?> age,
-      Value<String?> birthYear,
+      Value<String> lastName,
+      Value<int> age,
+      Value<String> birthYear,
       Value<String?> nationality,
       Value<int> rowid,
     });
@@ -597,9 +596,9 @@ class $$UserDetailsTableTableTableManager
               ({
                 Value<String> id = const Value.absent(),
                 Value<String> firstName = const Value.absent(),
-                Value<String?> lastName = const Value.absent(),
-                Value<int?> age = const Value.absent(),
-                Value<String?> birthYear = const Value.absent(),
+                Value<String> lastName = const Value.absent(),
+                Value<int> age = const Value.absent(),
+                Value<String> birthYear = const Value.absent(),
                 Value<String?> nationality = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => UserDetailsTableCompanion(
@@ -615,9 +614,9 @@ class $$UserDetailsTableTableTableManager
               ({
                 required String id,
                 required String firstName,
-                Value<String?> lastName = const Value.absent(),
-                Value<int?> age = const Value.absent(),
-                Value<String?> birthYear = const Value.absent(),
+                required String lastName,
+                required int age,
+                required String birthYear,
                 Value<String?> nationality = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => UserDetailsTableCompanion.insert(

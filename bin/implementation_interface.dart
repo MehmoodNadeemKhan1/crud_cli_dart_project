@@ -6,5 +6,3 @@ abstract interface class IRepository<T>{
   Future<void> delete(String id);
   Future<void> deleteAll();
 }
-
-

@@ -32,6 +32,10 @@ class AppDatabase extends _$AppDatabase {
 LazyDatabase _openConnection() {
   return LazyDatabase(() async {
     final file = File('my_sqlite_db.db');
-    return NativeDatabase(file);
+    return NativeDatabase(file,setup:(DB){
+      DB.execute('PRAGMA foreign_keys = ON');
+    });
+
+
   });
 }

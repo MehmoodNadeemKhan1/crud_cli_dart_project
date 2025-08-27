@@ -15,17 +15,11 @@ class UserDetailsDatabaseRepository implements IRepository<UserDetails> {
         id: data?.userId?.toString() ?? "0",
         firstName: data?.firstName ?? "Unknown",
 
-        lastName: data?.lastName == null
-            ? const Value.absent()
-            : Value(data!.lastName!),
+        lastName: data?.lastName ?? "Unknown" ,
 
-        age: data?.age == null
-            ? const Value.absent()
-            : Value(data!.age!),
+        age: data?.age ?? 0 ,
 
-        birthYear: data?.birthYear == null
-            ? const Value.absent()
-            : Value(data!.birthYear!),
+        birthYear: data?.birthYear ?? "0000",
 
         nationality: data?.nationality == null
             ? const Value.absent()
@@ -79,10 +73,10 @@ class UserDetailsDatabaseRepository implements IRepository<UserDetails> {
     await db.updateUser(
       UserDetailDb(
         id: id,
-        firstName: data!.firstName!.toString(),
-        lastName: data.lastName,
-        age: data.age,
-        birthYear: data.birthYear,
+        firstName: data?.firstName ?? "Unknown",
+        lastName: data?.lastName ?? "Unknown",
+        age: data?.age ?? 0,
+        birthYear: data?.birthYear ?? "0000",
         nationality: data.nationality,
       ),
     );

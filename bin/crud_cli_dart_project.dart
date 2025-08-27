@@ -4,6 +4,7 @@ import 'database_based_implementation.dart';
 import 'user_details_model.dart';
 import 'package:args/args.dart';
 import 'user_detail_app_database.dart';
+import 'file_json_based_implementation.dart';
 
 void main(List<String> arguments) async
 {
@@ -21,11 +22,17 @@ void main(List<String> arguments) async
         negatable: false,
         help: 'Enable file option.'
     )
+
         ..addFlag(
             'file',
             abbr: 'f',
             negatable: false,
             help: 'Enable file option.'
+        )
+        ..addOption(
+            'encoding',
+            abbr: 'e',
+            help: 'Option is not specified.'
         )
     ..addOption(
         'create',
@@ -143,7 +150,7 @@ void main(List<String> arguments) async
             print("You entered the wrong flag for server");
         }
     }
-    else if (results['file'] == true)
+    else if (results['file'] == true && results['encoding'] == 'line')
     {
         if (results['create'] != null)
         {
@@ -227,6 +234,88 @@ void main(List<String> arguments) async
         {
             print("You entered the wrong flag for file");
         }
+    }else if(results['file'] == true && results['encoding'] == 'json'){
+        if (results['create'] != null)
+        {
+
+            final createData = results['create'];
+            if (createData != null)
+            {
+                final split = createData.split(",");
+                final id = split.length > 0 ? split[0] : null;
+                final firstName = split.length > 1 ? split[1] : null;
+                final lastName = split.length > 2 ? split[2] : null;
+                final age = split.length > 3 ? split[3] : null;
+                final birthYear = split.length > 4 ? split[4] : null;
+                final nationality = split.length > 5 ? split[5] : null;
+                if (id == null && firstName == null && lastName == null && age == null && birthYear == null && nationality == null)
+                {
+                    print("All fields are required");
+                }
+
+                print('UserId: $id,FirstName: $firstName LastName: $lastName Age: $age BirthYear: $birthYear Nationality: $nationality');
+
+                final json = userdetails_File_Json_Based_Implementation();
+                 await json.create(UserDetails(name: 'UserDetailsAPI', data: UserData(userId: id, firstName: firstName, lastName: lastName, age: int.parse(age), birthYear: birthYear, nationality: nationality)));
+
+            }
+            else
+            {
+                print("No created data provided please enter all fields");
+            }
+
+        }
+        else if (results['list'] == true)
+        {
+            final json = userdetails_File_Json_Based_Implementation();
+            final list = await json.list();
+            print(list);
+        }
+        else if (results['getone'] != null)
+        {
+            final json = userdetails_File_Json_Based_Implementation();
+            await json.findById(results['getone']);
+        }
+        else if (results['delete'] != null)
+        {
+            final json = userdetails_File_Json_Based_Implementation();
+             await json.delete(results['delete']);
+
+        }
+        else if (results['delete-all'] == true)
+        {
+            final json = userdetails_File_Json_Based_Implementation();
+             await json.deleteAll();
+        }
+        else if (results['update'] != null)
+        {
+            final createData = results['update'];
+            if (createData != null)
+            {
+                final split = createData.split(",");
+                final id = split.length > 0 ? split[0] : null;
+                final firstName = split.length > 1 ? split[1] : null;
+                final lastName = split.length > 2 ? split[2] : null;
+                final age = split.length > 3 ? split[3] : null;
+                final birthYear = split.length > 4 ? split[4] : null;
+                final nationality = split.length > 5 ? split[5] : null;
+
+                if (id == null && firstName == null && lastName == null &&
+                    age == null && birthYear == null && nationality == null)
+                {
+                    print("All fields are required");
+                }
+
+                print('UserId: $id,FirstName: $firstName LastName: $lastName Age: $age BirthYear: $birthYear Nationality: $nationality');
+                final json = userdetails_File_Json_Based_Implementation();
+                 await json.update(id, UserDetails(name: 'UserDetailsAPI', data: UserData(firstName:firstName, lastName:lastName, age:int.parse(age), birthYear:birthYear, nationality:nationality)));
+            }
+        }
+
+        else
+        {
+            print("You entered the wrong flag for database");
+        }
     }else if(results['database'] == true){
         if (results['create'] != null)
         {
@@ -249,7 +338,7 @@ void main(List<String> arguments) async
                 print('UserId: $id,FirstName: $firstName LastName: $lastName Age: $age BirthYear: $birthYear Nationality: $nationality');
                 final db = AppDatabase();
                 final database = UserDetailsDatabaseRepository(db);
-                 await database.create(UserDetails(name: 'UserDetailsAPI', data: UserData(userId: id, firstName: firstName, lastName: lastName, age: int.parse(age), birthYear: birthYear, nationality: nationality)));
+                await database.create(UserDetails(name: 'UserDetailsAPI', data: UserData(userId: id, firstName: firstName, lastName: lastName, age: int.parse(age), birthYear: birthYear, nationality: nationality)));
 
             }
             else
@@ -273,16 +362,16 @@ void main(List<String> arguments) async
         }
         else if (results['delete'] != null)
         {
-             final db=AppDatabase();
-             final database = UserDetailsDatabaseRepository(db);
-             await database.delete(results['delete']);
+            final db=AppDatabase();
+            final database = UserDetailsDatabaseRepository(db);
+            await database.delete(results['delete']);
 
         }
         else if (results['delete-all'] == true)
         {
             final db = AppDatabase();
-             final database = UserDetailsDatabaseRepository(db);
-             await database.deleteAll();
+            final database = UserDetailsDatabaseRepository(db);
+            await database.deleteAll();
         }
         else if (results['update'] != null)
         {
@@ -304,8 +393,9 @@ void main(List<String> arguments) async
                 }
 
                 print('UserId: $id,FirstName: $firstName LastName: $lastName Age: $age BirthYear: $birthYear Nationality: $nationality');
-               //  final api = UserDetailsApiRepository(ApiClient());
-             //    await api.update(id, UserDetails(name: 'UserDetailsAPI', data: UserData(firstName:firstName, lastName:lastName, age:int.parse(age), birthYear:birthYear, nationality:nationality)));
+                final db = AppDatabase();
+                final database = UserDetailsDatabaseRepository(db);
+                await database.update(id, UserDetails(name: 'UserDetailsAPI', data: UserData(firstName:firstName, lastName:lastName, age:int.parse(age), birthYear:birthYear, nationality:nationality)));
             }
         }
 

@@ -167,7 +167,7 @@ class UserDetailsApiRepository implements IRepository<UserDetails>
         {
             final Map<String, dynamic> jsondata = jsonDecode(response.body);
             final userdetails = UserDetails.fromJson(jsondata);
-            print("Fetched Result:$userdetails");
+            print("Fetched Result:${userdetails}");
         }
         else 
         {
